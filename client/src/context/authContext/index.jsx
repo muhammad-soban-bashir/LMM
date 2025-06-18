@@ -2,16 +2,20 @@ import {
   loginFormInitiaState,
   signupFormInitiaState,
 } from "@/config/formControlle";
-import { loginService, registerService } from "@/services";
-import { createContext, useState } from "react";
+import { checkAuthService, loginService, registerService } from "@/services";
+import { createContext, useEffect, useState } from "react";
 export const AuthContext = createContext(null);
-
 const AuthProvider = ({ children }) => {
   const [signinFormInitialData, setSigninFormInitialData] =
     useState(loginFormInitiaState);
   const [signupFormInitialData, setsignupFormInitialData] = useState(
     signupFormInitiaState
   );
+  const[auth, setAuth] = useState({
+    authenticate:false,
+    user:null
+  })
+  console.log(auth)
 
   const handleRegisterUser = async(event) => {
     console.log("submitting");
@@ -22,8 +26,42 @@ const AuthProvider = ({ children }) => {
   const handleLoginUser = async(event)=>{
     event.preventDefault();
     const data = await loginService(signinFormInitialData) 
-    console.log(data)
+    console.log("data",data)
+   if(data.success){
+     sessionStorage.setItem("accessToken", JSON.stringify(data.accessToken))
+    setAuth({
+      authenticate:true,
+      user:data.user
+    });
+   } else {
+      setAuth({
+        authenticate:false,
+        user:null
+      });
+   }
   }
+
+
+  const checkAuth = async()=>{
+    const data = await checkAuthService();
+    console.log("checkauth",data)
+    if(data.success){
+       setAuth({
+      authenticate:true,
+      user:data.user
+    })
+    } else {
+      setAuth({
+        authenticate:false,
+        user:null
+      });
+    }
+  }
+ 
+
+  useEffect(()=>{
+  checkAuth()
+  },[])
 
   return (
     <AuthContext.Provider

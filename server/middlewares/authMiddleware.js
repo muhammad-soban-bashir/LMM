@@ -6,27 +6,24 @@ const verifyToken = async(token, secretKey)=>{
     
     return jwt.verify(token, secretKey)
 }
+const autheticate = asyncErrorHandler(async (req, res, next) => {
+  const authHeader = req.headers.authorization;
 
-const autheticate = asyncErrorHandler(async(req,res,next)=>{
-     
-    const authHeader = req.headers.authorization
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    throw new Error("User is not authenticated - missing token");
+  }
 
-    if(!authHeader){
-        throw new Error("user is not authenticated")
-    }
+  const token = authHeader.split(' ')[1];
 
-    const token = authHeader.split(' ')[1];
+  const payload = await verifyToken(token, "JWT_SECRET"); // FIXED HERE
+  console.log("payload", payload);
 
-const paylaod = await verifyToken(token, 'JWT_SECRET')
-console.log(paylaod)
-if(!paylaod){
-     throw new Error("user is not authenticated")
+  if (!payload) {
+    throw new Error("User is not authenticated - invalid payload");
+  }
 
-}
-req.user = paylaod
-
-next()
-
-})
+  req.user = payload;
+  next();
+});
 
 module.exports ={autheticate}

@@ -58,7 +58,7 @@ const signIn = asyncErrorHandler(async (req, res) => {
     throw new Error("invalid password");
   }
 
-  const accessToken =await jwt.sign(
+  const accessToken = jwt.sign(
     {
       id: existingUser.id,
       userName: existingUser.userName,

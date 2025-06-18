@@ -15,5 +15,9 @@ const loginService = async (formData) => {
 
   return data;
 };
-
-export { registerService, loginService };
+const checkAuthService = async () => {
+  const  {data} = await axiosInstance.get("/auth/check-auth");
+console.log(data)
+  return data;
+};
+export { registerService, loginService, checkAuthService };
