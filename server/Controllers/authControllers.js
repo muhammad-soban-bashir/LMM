@@ -3,6 +3,10 @@ const User = require("../Models/user.js");
 const asyncErrorHandler = require("../Utils/asyncErrorhandler");
 const { signupSchema, signinSchema } = require("../Utils/authValidators");
 const  jwt  = require("jsonwebtoken");
+
+
+
+
 const signUp = asyncErrorHandler(async (req, res) => {
   const { error } = signupSchema.validate(req.body);
   console.log(error);
@@ -67,10 +71,11 @@ const signIn = asyncErrorHandler(async (req, res) => {
     },
     "JWT_SECRET",
     {
-      expiresIn: "1h",
+      expiresIn: "1d",
     }
   );
 
+  console.log(accessToken)
   res.status(200).json({
     success: true,
     message: "login successful",
